@@ -1,19 +1,22 @@
 //@ts-check
 const parse = require('node-html-parser').parse;
+const {Configuration, OpenAIApi} = require('openai');
 const fetch = (async () => await (await import('node-fetch')).default)();
 
 const page_reader = (function () {
-    this.config = {'api-key': undefined};
+    this.api_key = '';
+    this.chatgpt = new OpenAIApi(new Configuration());
     /**
-     * 
      * @param {string | undefined} apiKey 
      */
     this.configure = function(apiKey) {
         // @ts-ignore
-        if (apiKey) this.config["api-key"] = apiKey;
+        if (apiKey) {
+            this.chatgpt = new OpenAIApi(new Configuration({apiKey}));
+            this.api_key = apiKey;
+        }
     }
     /**
-     * 
      * @param {string} url 
      * @returns {Promise<string>}
      */
@@ -25,12 +28,14 @@ const page_reader = (function () {
         return body?.innerText || '';
     }
 
-    this.read_page = async function(url) { 
+    this.summarise_page = async function(url) { 
+        if (!this.api_key) { throw new Error('API key not configured. Use the configure method.'); }
         const page_text = await this.get_page_text(url);
-        
+        const response = await this.chatgpt.createChatCompletion({model: "gpt-3.5-turbo", messages: [{role: "user", content: "Summarise this page: " + page_text}]});
+        return response.data.choices[0].message?.content || '';
     }
 
-    return {configure: this.configure, summarise_page: this.get_page_text};
+    return {configure: this.configure, summarise_page: this.summarise_page};
 })();
 
 exports.default = {page_reader}
