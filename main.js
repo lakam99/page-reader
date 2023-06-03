@@ -1,4 +1,13 @@
 //@ts-check
+/**
+ * page-reader
+ * Written by Arkam Mazrui
+ * arkam.mazrui[at]gmail.com
+ * https://github.com/lakam99/page-reader
+ * Licensed under the MIT license
+ * Buy me a coffee at https://www.buymeacoffee.com/lakam99
+ */
+
 const parse = require('node-html-parser').parse;
 const {Configuration, OpenAIApi} = require('openai');
 const fetch = (async () => await (await import('node-fetch')).default)();
