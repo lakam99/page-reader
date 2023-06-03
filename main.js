@@ -24,7 +24,7 @@ const page_reader = (function () {
         console.log(body?.innerText);
     }
 
-    return {summarise_page: this.get_page_text};
+    return {configure: this.configure, summarise_page: this.get_page_text};
 })();
 
-page_reader.summarise_page("https://youtube.com");
+exports.default = {page_reader}
